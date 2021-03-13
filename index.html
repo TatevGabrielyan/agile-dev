@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Agile Software Development</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <style>
+         #overlay, #overlay2{
+         position: fixed;
+         top: 0;
+         bottom: 0;
+         left: 0;
+         right: 0;
+         background: rgba(0, 0, 0, 0.6);
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container-fluid">
+         <div class="row bg-dark">
+            <div class="col-lg-12">
+               <p class="text-center text-light display-4 pt-2">Values and Principles in Agile Software Development</p>
+            </div>
+         </div>
+      </div>
+      <div id="app">
+         <div class="container">
+            <div class="row mt-3">
+               <div class="col-lg-6">
+                  <h3>Values</h3>
+               </div>
+               <div class="col-lg-6">
+                  <button  type="button" class="btn btn-danger float-right text-white" @click="showAddModal=true">
+                  Add new value
+                  </button>
+               </div>
+            </div>
+            <hr class="bg-info">
+            <div class="alert alert-danger" v-if="errorMsg">
+               {{errorMsg}}
+            </div>
+            <div class="alert alert-success" v-if="successMsg">
+               {{app.successMsg}}
+            </div>
+            <div class="row">
+               <div class="col-lg-12">
+                  <table class="table table-bordered table-striped">
+                     <thead>
+                        <tr class="text-center bg-info text-light">
+                           <th>ID</th>
+                           <th>Value</th>
+                           <th>Edit</th>
+                           <th>Delete</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr class="text-center" v-for="test in vals">
+                           <td>{{test.id}}</td>
+                           <td name="name">{{test.value}}</td>
+                           <td><a href="#" class="text-success" @click="showEditModal=true; selectValue(test)"><i class="fa fa-edit"></i></a></td>
+                           <td><a href="#" class="text-danger" @click="showDeleteModal=true; selectValue(test)"><i class="fa fa-trash"></i></a></td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showAddModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Add new value 
+                     </h5>
+                     <button type="button" class="close" @click="showAddModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <form action="#" method="post">
+                        <div class="form-group">
+                           <input type="text" name="value" class="form-control form-control-lg" placeholder="Value" v-model="newValue.value">
+                        </div>
+                        <div class="form-group">
+                           <button  type="button" class="btn btn-info btn-block btn-lg" @click="showAddModal=false;  addValue(); clearMsg();">Add value</button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showEditModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Edit value
+                     </h5>
+                     <button type="button" class="close" @click="showEditModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <form action="#" method="post">
+                        <div class="form-group">
+                           <input type="text" name="name" class="fomr-control form-control-lg" v-model = "currentValue.value">
+                        </div>
+                        <div class="form-group">
+                           <button  type="button" class="btn btn-info btn-block btn-lg" @click="showEditModal=false; updateValue(); clearMsg();">Update value</button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showDeleteModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Delete value
+                     </h5>
+                     <button type="button" class="close" @click="showDeleteModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <h4 class="text-danger">Are you sure you want to delete this value?</h4>
+                     <h5>You are deleting '{{currentValue.value}}'</h5>
+                     <hr>
+                     <button class="btn btn-danger btn-lg" @click="showDeleteModal=false;  deleteValue(); clearMsg();">Yes</button>
+                     &nbsp;
+                     &nbsp;
+                     &nbsp;
+                     &nbsp;
+                     <button class="btn btn-success btn-lg" @click="showDeleteModal=false">No</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="app2">
+         <div class="container">
+            <div class="row mt-3">
+               <div class="col-lg-6">
+                  <h3>Principles</h3>
+               </div>
+               <div class="col-lg-6">
+                  <button  type="button" class="btn btn-danger float-right text-white" @click="showAddModal=true">
+                  Add new principle
+                  </button>
+               </div>
+            </div>
+            <hr class="bg-info">
+            <div class="alert alert-danger" v-if="errorMsg">
+               {{errorMsg}}
+            </div>
+            <div class="alert alert-success" v-if="successMsg">
+               {{app2.successMsg}}
+            </div>
+            <div class="row">
+               <div class="col-lg-12">
+                  <table class="table table-bordered table-striped">
+                     <thead>
+                        <tr class="text-center bg-info text-light">
+                           <th>ID</th>
+                           <th>Principle</th>
+                           <th>Edit</th>
+                           <th>Delete</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr class="text-center" v-for="test in principles">
+                           <td>{{test.id}}</td>
+                           <td name="name">{{test.value}}</td>
+                           <td><a href="#" class="text-success" @click="showEditModal=true; selectValue(test)"><i class="fa fa-edit"></i></a></td>
+                           <td><a href="#" class="text-danger" @click="showDeleteModal=true; selectValue(test)"><i class="fa fa-trash"></i></a></td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showAddModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Add new principle 
+                     </h5>
+                     <button type="button" class="close" @click="showAddModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <form action="#" method="post">
+                        <div class="form-group">
+                           <input type="text" name="value" class="form-control form-control-lg" placeholder="Principle" v-model="newValue.value">
+                        </div>
+                        <div class="form-group">
+                           <button  type="button" class="btn btn-info btn-block btn-lg" @click="showAddModal=false;  addValue(); clearMsg();">Add principle</button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showEditModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Edit principle
+                     </h5>
+                     <button type="button" class="close" @click="showEditModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <form action="#" method="post">
+                        <div class="form-group">
+                           <input type="text" name="name" class="fomr-control form-control-lg" v-model = "currentValue.value">
+                        </div>
+                        <div class="form-group">
+                           <button  type="button" class="btn btn-info btn-block btn-lg" @click="showEditModal=false; updateValue(); clearMsg();">Update principle</button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="overlay" v-if="showDeleteModal">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">
+                        Delete principle
+                     </h5>
+                     <button type="button" class="close" @click="showDeleteModal=false">
+                     <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body p-4">
+                     <h4 class="text-danger">Are you sure you want to delete this principle?</h4>
+                     <h5>You are deleting '{{currentValue.value}}'</h5>
+                     <hr>
+                     <button class="btn btn-danger btn-lg" @click="showDeleteModal=false;  deleteValue(); clearMsg();">Yes</button>
+                     &nbsp;
+                     &nbsp;
+                     &nbsp;
+                     &nbsp;
+                     <button class="btn btn-success btn-lg" @click="showDeleteModal=false">No</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script>
+         var app = new Vue({
+             el:"#app",
+             data:{
+                 errorMsg: "",
+                 successMsg: "",
+                 showAddModal:false,
+                 showEditModal: false,
+                 showDeleteModal: false,
+                 vals: [],
+                 newValue: {value: ""},
+                 currentValue: {},
+             },
+             mounted: function(){
+                 this.getAllValues();
+                
+             },
+             methods: {
+                 getAllValues(){
+                     axios.get("http://localhost/agile-dev/process.php?action=read").then(function(response){
+                         if(response.data.error){
+                             app.errorMsg = response.data.message;
+         
+                         }else{
+                             app.vals = response.data.vals;
+                             console.log( response.data.vals)
+                         }
+                     });
+                 },
+               
+                 addValue(){
+                     var formData = app.toFormData(app.newValue);
+                    
+                     axios.post("http://localhost/agile-dev/process.php?action=create", formData).then(function(response){
+                         app.newValue = {value : ""};
+                         if(response.data.error){
+                             app.errorMsg = response.data.message;
+                             console.log(app.errorMsg);
+                         }else{
+                             // app.vals = response.data.vals;
+                             app.successMsg = response.data.message;
+                             app.getAllValues();
+                           
+                         }
+                     });
+                 },
+                 
+         
+                 updateValue(){
+                     var formData = app.toFormData(app.currentValue);
+         
+                     axios.post("http://localhost/agile-dev/process.php?action=update", formData).then(function(response){
+                         app.currentValue = {};
+                         if(response.data.error){
+                             app.errorMsg = response.data.message;
+                       
+                         }else{
+                             app.successMsg = response.data.message;
+                             
+                             app.getAllValues();
+                             console.log(app.vals)
+                         }
+                     });
+                 },
+                 
+                 deleteValue(){
+                     var formData = app.toFormData(app.currentValue);
+         
+                     axios.post("http://localhost/agile-dev/process.php?action=delete", formData).then(function(response){
+                         app.currentValue = {};
+                         if(response.data.error){
+                             app.errorMsg = response.data.message;
+                       
+                         }else{
+                             app.successMsg = response.data.message;
+                             
+                             app.getAllValues();
+                             console.log(app.vals)
+                         }
+                     });
+                 },
+                
+         
+                 toFormData(obj){
+                     var fd = new FormData();
+                     for(var i in obj){
+                         fd.append(i, obj[i]);
+                     }
+                     return fd;
+                 },
+                 selectValue(test){
+                     app.currentValue = test;
+                 },
+               
+                 clearMsg(){
+                     app.errorMsg = "";
+                     app.successMsg = "";
+                 },
+             }
+         });
+      </script>
+      <script>
+         var app2 = new Vue({
+             el:"#app2",
+             data:{
+                 errorMsg: "",
+                 successMsg: "",
+                 showAddModal:false,
+                 showEditModal: false,
+                 showDeleteModal: false,
+                 principles: [],
+                 newValue: {value: ""},
+                 currentValue: {},
+             },
+             mounted: function(){
+                 this.getAllValues();
+                
+             },
+             methods: {
+                 getAllValues(){
+                     axios.get("http://localhost/agile-dev/principles.php?action=read").then(function(response){
+                         if(response.data.error){
+                             app2.errorMsg = response.data.message;
+         
+                         }else{
+                             app2.principles = response.data.principles;
+                             console.log( response.data.principles)
+                         }
+                     });
+                 },
+               
+                 addValue(){
+                     var formData = app2.toFormData(app2.newValue);
+                    
+                     axios.post("http://localhost/agile-dev/principles.php?action=create", formData).then(function(response){
+                         app2.newValue = {value : ""};
+                         if(response.data.error){
+                             app2.errorMsg = response.data.message;
+                             console.log(app2.errorMsg);
+                         }else{
+                             app2.successMsg = response.data.message;
+                             app2.getAllValues();
+                           
+                         }
+                     });
+                 },
+                 
+         
+                 updateValue(){
+                     var formData = app2.toFormData(app2.currentValue);
+         
+                     axios.post("http://localhost/agile-dev/principles.php?action=update", formData).then(function(response){
+                         app2.currentValue = {};
+                         if(response.data.error){
+                             app2.errorMsg = response.data.message;
+                       
+                         }else{
+                             app2.successMsg = response.data.message;
+                             
+                             app2.getAllValues();
+                             console.log(app2.principles)
+                         }
+                     });
+                 },
+                 
+                 deleteValue(){
+                     var formData = app2.toFormData(app2.currentValue);
+         
+                     axios.post("http://localhost/agile-dev/principles.php?action=delete", formData).then(function(response){
+                         app2.currentValue = {};
+                         if(response.data.error){
+                             app2.errorMsg = response.data.message;
+                       
+                         }else{
+                             app2.successMsg = response.data.message;
+                             
+                             app2.getAllValues();
+                             console.log(app2.principles)
+                         }
+                     });
+                 },
+                
+         
+                 toFormData(obj){
+                     var fd = new FormData();
+                     for(var i in obj){
+                         fd.append(i, obj[i]);
+                     }
+                     return fd;
+                 },
+                 selectValue(test){
+                     app2.currentValue = test;
+                 },
+               
+                 clearMsg(){
+                     app2.errorMsg = "";
+                     app2.successMsg = "";
+                 },
+             }
+         });
+      </script>
+   </body>
+</html>
